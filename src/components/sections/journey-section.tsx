@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { CatalogLabel } from "@/components/catalog-label";
 import { Reveal } from "@/components/reveal";
 import { journey } from "@/data/portfolio";
@@ -8,7 +9,11 @@ export function JourneySection() {
   return (
     <section
       id="journey"
-      className="halftone-light flex h-full w-full flex-col items-center justify-center overflow-hidden bg-paper px-4 py-4 text-ink sm:px-8 sm:py-6 lg:px-12"
+      className="halftone-light relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-paper px-4 py-4 text-ink sm:px-8 sm:py-6 lg:px-12"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(246, 241, 230, 0.94), rgba(239, 231, 218, 0.96)), url('/assets/retro/vintage-paper.jpg')`,
+        backgroundSize: "cover",
+      }}
     >
       <div className="w-full max-w-[90rem]">
         <div className="grid gap-6 lg:grid-cols-[minmax(16rem,0.75fr)_minmax(0,1.25fr)] lg:gap-12 lg:items-center">
@@ -18,13 +23,32 @@ export function JourneySection() {
               The story so far.
             </h2>
             <p className="mt-3 max-w-md text-xs leading-5 text-ink/70 sm:text-sm">
-              An undated record of what I’m learning now and where I’m heading.
+              An undated record of what I am learning now and where I am heading.
             </p>
-            <div className="mt-4 hidden rounded-lg border border-ink/20 bg-paper-deep/60 p-3 font-catalog text-xs text-ink/75 lg:block">
-              <span className="font-bold text-accent">CHRONICLE // MASTER TAPE</span>
-              <p className="mt-0.5 text-[0.68rem] leading-relaxed">
-                Recording progress through foundational software engineering, systems networking, and AI development.
+
+            {/* Vintage Radio Broadcast & Tape Chronicle Card */}
+            <div className="mt-4 hidden rounded-lg border border-ink/20 bg-paper-deep/80 p-3.5 font-catalog text-xs text-ink/80 lg:block shadow-xs">
+              <div className="flex items-center justify-between border-b border-ink/15 pb-2">
+                <span className="font-bold text-accent">CHRONICLE // DISPATCH LOG</span>
+                <span className="text-ink/60">BAND: SHORTWAVE 7.2 MHz</span>
+              </div>
+              <p className="mt-2 text-[0.72rem] leading-relaxed">
+                Recording progress through foundational software engineering, systems networking, and AI development on magnetic master tape.
               </p>
+              <div className="mt-3 flex items-center gap-3">
+                <div className="relative size-12 shrink-0 overflow-hidden rounded border border-ink/20">
+                  <Image
+                    src="/assets/retro/vintage-stamps.jpg"
+                    alt="Vintage radio transmission stamp"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-[0.65rem] text-ink/60">
+                  <p className="font-semibold text-ink">OFFICIAL POSTMARK</p>
+                  <p>ARCHIVE STAMP OCT 1974</p>
+                </div>
+              </div>
             </div>
           </Reveal>
 

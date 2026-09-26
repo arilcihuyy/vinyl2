@@ -75,49 +75,57 @@ export function DeckProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
-  const switchTab = useCallback((targetTab: TabId) => {
-    if (targetTab === activeTab && !isTransitioning) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-
-    setActiveTab(targetTab);
-    const newHash = targetTab === "top" ? "#top" : `#${targetTab}`;
-    if (window.location.hash !== newHash) {
-      window.location.hash = newHash;
-    }
-    window.scrollTo({ top: 0, behavior: "auto" });
-
-    if (!reducedMotion) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 500);
-    }
-  }, [activeTab, isTransitioning, reducedMotion]);
-
-  // Intercept hash anchor clicks to switch tabs seamlessly
+  // Update active tab on scroll using IntersectionObserver
   useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      const target = (event.target as HTMLElement).closest("a");
-      if (!target) return;
-
-      const href = target.getAttribute("href");
-      if (href && href.startsWith("#")) {
-        const rawId = href.replace("#", "");
-        if (rawId === "home") {
-          event.preventDefault();
-          switchTab("top");
-        } else if (validTabs.includes(rawId as TabId)) {
-          event.preventDefault();
-          switchTab(rawId as TabId);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id as TabId;
+            if (validTabs.includes(id)) {
+              setActiveTab(id);
+            }
+          }
         }
-      }
-    };
+      },
+      {
+        rootMargin: "-20% 0px -70% 0px",
+        threshold: 0,
+      },
+    );
 
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
-  }, [switchTab]);
+    validTabs.forEach((tab) => {
+      const el = document.getElementById(tab);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const switchTab = useCallback(
+    (targetTab: TabId) => {
+      setActiveTab(targetTab);
+      const newHash = targetTab === "top" ? "#top" : `#${targetTab}`;
+      if (window.location.hash !== newHash) {
+        window.location.hash = newHash;
+      }
+
+      const targetEl = document.getElementById(targetTab);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      } else if (targetTab === "top") {
+        window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+      }
+
+      if (!reducedMotion) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 400);
+      }
+    },
+    [reducedMotion],
+  );
 
   return (
     <DeckContext.Provider value={{ activeTab, isTransitioning, switchTab }}>

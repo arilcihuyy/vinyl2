@@ -9,9 +9,14 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { activeTab, isTransitioning, switchTab } = useDeck();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
@@ -40,7 +45,10 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-ink/15 bg-paper text-ink">
+      <header
+        data-hydrated={mounted ? "true" : undefined}
+        className="sticky top-0 z-50 border-b border-ink/15 bg-paper text-ink"
+      >
         <div className="mx-auto flex h-18 max-w-[90rem] items-center justify-between px-5 sm:px-8 lg:px-12">
           <div className="flex items-center gap-3 sm:gap-4">
             <a
@@ -161,7 +169,7 @@ export function SiteHeader() {
             aria-hidden="true"
           >
             <motion.div
-              className="paper-texture halftone-light absolute inset-0 bg-[#F4E9D4] shadow-2xl"
+              className="paper-texture halftone-light pointer-events-none absolute inset-0 bg-[#F4E9D4] shadow-2xl"
               initial={{ scaleX: 0, originX: 0 }}
               animate={{ scaleX: [0, 1, 1, 0], originX: [0, 0, 1, 1] }}
               transition={{

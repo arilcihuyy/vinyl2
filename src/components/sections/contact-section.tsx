@@ -76,7 +76,7 @@ export function ContactSection() {
               className="text-accent-light transition-transform group-hover:-translate-y-0.5"
               aria-hidden="true"
             />
-            <span>Back to the top</span>
+            <span>Return to beginning</span>
           </a>
 
           <span className="font-catalog text-[0.62rem] tracking-wider text-cream/40">

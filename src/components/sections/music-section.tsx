@@ -6,7 +6,7 @@ export function MusicSection() {
   return (
     <section
       id="music"
-      className="halftone-dark flex h-full w-full flex-col items-center justify-center overflow-hidden bg-charcoal px-4 py-6 text-cream sm:px-8 sm:py-8 lg:px-12"
+      className="flex h-full w-full flex-col items-center justify-center overflow-hidden bg-[#1C1B19] px-4 py-6 text-cream sm:px-8 sm:py-8 lg:px-12"
     >
       <div className="w-full max-w-[90rem]">
         <Reveal className="mb-5 flex flex-wrap items-baseline justify-between gap-4 border-b border-cream/15 pb-3 sm:mb-6">

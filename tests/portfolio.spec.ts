@@ -9,6 +9,7 @@ test("portfolio content and controls work without overflow", async ({ page }, te
   page.on("pageerror", (error) => consoleErrors.push(error.message));
 
   await page.goto("/");
+  await expect(page.locator("header[data-hydrated='true']")).toBeVisible();
   await expect(page.getByRole("heading", { level: 1, name: "Aril" })).toBeVisible();
   await expect(page.getByRole("link", { name: "See the Tracklist" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Meet Aril" })).toBeVisible();
@@ -52,16 +53,19 @@ test("portfolio content and controls work without overflow", async ({ page }, te
       const menuBtn = page.getByRole("button", { name: /navigation menu/ });
       if (await menuBtn.isVisible()) {
         await menuBtn.click();
+        await expect(page.locator("#mobile-navigation")).toBeVisible();
         await page
           .locator("#mobile-navigation")
           .getByRole("link", { name: new RegExp(tabName) })
           .click();
+        await expect(page.locator("#mobile-navigation")).toHaveCount(0);
       } else {
         await page.evaluate((h) => {
           window.location.hash = h;
         }, hash);
       }
     }
+    await page.waitForTimeout(350);
   };
 
   await navigateTo("Interests", "#interests");
@@ -74,8 +78,14 @@ test("portfolio content and controls work without overflow", async ({ page }, te
   }
 
   await navigateTo("Projects", "#projects");
-  await expect(page.getByRole("heading", { name: "No releases yet" })).toBeVisible();
-  await expect(page.locator("#projects button")).toHaveCount(0);
+  await expect(page.locator("#projects button")).toHaveCount(3);
+  await expect(
+    page.getByRole("heading", { name: "Systems, Telecommunications & Networking" }),
+  ).toBeVisible();
+  await page.locator("#projects button").nth(1).click();
+  await expect(
+    page.getByRole("heading", { name: "AI & Neural Interface Experiments" }),
+  ).toBeVisible();
 
   await navigateTo("Contact", "#contact");
   const contact = page.locator("#contact");
@@ -112,6 +122,7 @@ test("mobile navigation opens, closes, and navigates", async ({ page }, testInfo
   test.skip(!testInfo.project.name.startsWith("mobile"), "Mobile navigation only");
 
   await page.goto("/");
+  await expect(page.locator("header[data-hydrated='true']")).toBeVisible();
   const menuButton = page.getByRole("button", { name: "Open navigation menu" });
   await menuButton.click();
   await expect(page.getByRole("navigation", { name: "Mobile navigation" })).toBeVisible();

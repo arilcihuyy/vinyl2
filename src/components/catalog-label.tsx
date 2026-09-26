@@ -11,9 +11,11 @@ export function CatalogLabel({
 }: CatalogLabelProps) {
   return (
     <p
-      className={`catalog-label ${tone === "dark" ? "text-cream/70" : "text-ink/60"}`}
+      className={`catalog-label ${tone === "dark" ? "text-cream" : "text-ink/85"}`}
     >
-      <span>{index}</span>
+      <span className={tone === "dark" ? "!text-amber-300 font-bold" : ""}>
+        {index}
+      </span>
       <span>{children}</span>
     </p>
   );

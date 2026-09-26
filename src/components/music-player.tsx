@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { tracks, type Track } from "@/data/portfolio";
 import { useAudioPlayer } from "@/hooks/use-audio-player";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { vinylCrackle } from "@/lib/vinyl-crackle";
 
 function formatTime(value: number) {
   if (!Number.isFinite(value) || value <= 0) {
@@ -162,6 +164,89 @@ function CassetteWellArtwork({
 }
 
 /**
+ * Vintage 12-inch Vinyl Turntable Platter Artwork
+ */
+function TurntableWellArtwork({
+  track,
+  isPlaying,
+  compact = false,
+}: {
+  track: Track;
+  isPlaying: boolean;
+  compact?: boolean;
+}) {
+  if (compact) {
+    return (
+      <div
+        role="img"
+        aria-label={`Vinyl turntable playback for ${track.title}`}
+        className="relative grid size-12 place-items-center overflow-hidden rounded-md border border-cream/20 bg-[#161311] text-cream"
+      >
+        <Disc3
+          aria-hidden="true"
+          size={24}
+          className={isPlaying ? "animate-spin text-amber-400" : "text-cream/50"}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      role="img"
+      aria-label={`Vinyl turntable playback for ${track.title}`}
+      className="relative flex aspect-[16/10] w-full flex-col justify-between overflow-hidden rounded-xl border border-cream/20 bg-[#161310] p-3 shadow-xl"
+    >
+      <div className="relative z-10 flex items-center justify-between border-b border-cream/15 pb-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="flex size-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]" />
+          <span className="font-catalog text-[0.62rem] font-bold tracking-widest text-cream/80">
+            TURNTABLE TT-74 // 33⅓ RPM
+          </span>
+        </div>
+        <span className="rounded bg-black/60 px-1.5 py-0.5 font-catalog text-[0.6rem] font-bold text-amber-300">
+          HEAVYWEIGHT LP
+        </span>
+      </div>
+
+      {/* Turntable Platter with Spinning Vinyl & Tonearm */}
+      <div className="relative my-auto flex h-32 items-center justify-center">
+        {/* Platter Edge */}
+        <div className="relative flex size-28 items-center justify-center rounded-full border-2 border-stone-500 bg-[#0C0B0A] shadow-xl">
+          {/* Vinyl Grooves */}
+          <div
+            className={`flex size-26 items-center justify-center rounded-full border border-stone-700/60 bg-gradient-to-tr from-[#1A1815] to-[#0A0908] ${
+              isPlaying ? "animate-spin" : ""
+            }`}
+            style={{ animationDuration: "2.8s" }}
+          >
+            {/* Center Label */}
+            <div className="flex size-10 items-center justify-center rounded-full border-2 border-[#F7DF94] bg-[#FFE3B3] text-center shadow-inner">
+              <span className="font-catalog text-[0.45rem] font-bold text-ink">ARIL</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Tonearm */}
+        <div
+          className={`pointer-events-none absolute right-4 top-2 h-24 w-1 origin-top rounded-full bg-stone-300 shadow-md transition-transform duration-500 ${
+            isPlaying ? "rotate-[28deg] translate-x-2" : "rotate-0"
+          }`}
+        >
+          {/* Cartridge headshell */}
+          <div className="absolute -bottom-1 -left-1 size-3 rounded-xs bg-[#C59E47]" />
+        </div>
+      </div>
+
+      <div className="relative z-10 flex items-center justify-between font-catalog text-[0.58rem] tracking-wider text-cream/80">
+        <span>DIRECT DRIVE MOTOR</span>
+        <span>AUDIOPHILE CARTRIDGE</span>
+      </div>
+    </div>
+  );
+}
+
+/**
  * Vintage Dual Analog VU Meters
  */
 function AnalogVUMeter({ isPlaying }: { isPlaying: boolean }) {
@@ -173,9 +258,9 @@ function AnalogVUMeter({ isPlaying }: { isPlaying: boolean }) {
           className="relative flex-1 rounded border border-cream/20 bg-[#181614] p-1.5 shadow-inner"
         >
           {/* Meter Header */}
-          <div className="flex items-center justify-between font-catalog text-[0.55rem] text-cream/50">
+          <div className="flex items-center justify-between font-catalog text-[0.55rem] text-cream/80">
             <span>{ch}</span>
-            <span className="font-bold text-amber-400/80">VU</span>
+            <span className="font-bold text-amber-300">VU</span>
           </div>
 
           {/* Dial Arc & Needle */}
@@ -243,7 +328,7 @@ function TactileDeckButton({
       >
         {children}
       </button>
-      <span className="font-catalog text-[0.52rem] font-bold tracking-wider text-cream/50">
+      <span className="font-catalog text-[0.52rem] font-bold tracking-wider text-cream/80">
         {sublabel}
       </span>
     </div>
@@ -295,31 +380,81 @@ export function MusicPlayer() {
   const statusCopy = getStatusCopy(status);
   const hasStatusIcon = status === "playing" || status === "error";
 
+  const [deckChamber, setDeckChamber] = useState<"turntable" | "cassette">("turntable");
+  const [isCrackleOn, setIsCrackleOn] = useState(false);
+
+  const toggleCrackle = () => {
+    vinylCrackle.playMechanicalClick();
+    if (isCrackleOn) {
+      vinylCrackle.stop();
+      setIsCrackleOn(false);
+    } else {
+      vinylCrackle.playNeedleDrop();
+      vinylCrackle.start(0.08);
+      setIsCrackleOn(true);
+    }
+  };
+
   return (
     <>
-      {/* Vintage Cassette Deck Chassis: Unified Compact 3-Column Studio Console */}
+      {/* Vintage Cassette & Turntable Deck Chassis */}
       <div className="overflow-hidden rounded-xl border-2 border-cream/20 bg-[#1A1816] p-3 sm:p-5 lg:p-6 shadow-2xl">
-        {/* Chassis Top Bar */}
+        {/* Chassis Top Bar with Deck Chamber Switcher */}
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-cream/15 pb-2">
           <div className="flex items-center gap-2">
-            <span className="rounded bg-cream px-1.5 py-0.5 font-catalog text-[0.62rem] font-black tracking-widest text-charcoal">
+            <span className="rounded bg-[#FFF7E8] px-1.5 py-0.5 font-catalog text-[0.62rem] font-black tracking-widest text-[#1C1B19]">
               ARIL HI-FI
             </span>
-            <span className="font-catalog text-[0.62rem] tracking-wider text-cream/70">
-              STEREO CASSETTE DECK // K-1980
+            <span className="font-catalog text-[0.62rem] tracking-wider text-cream/90">
+              {deckChamber === "turntable" ? "DIRECT DRIVE TURNTABLE // TT-74" : "STEREO CASSETTE DECK // K-1980"}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 font-catalog text-[0.6rem] tracking-wider text-accent-light">
-            <span className="size-1.5 rounded-full bg-accent" />
-            <span>DIRECT DRIVE MOTOR</span>
+
+          <div className="flex items-center gap-2">
+            {/* Chamber Mode Switcher */}
+            <div className="flex items-center rounded-lg border border-cream/20 bg-charcoal/80 p-0.5">
+              <button
+                type="button"
+                onClick={() => setDeckChamber("turntable")}
+                className={`rounded px-2.5 py-0.5 font-catalog text-[0.62rem] font-bold transition-colors focus-visible:outline-accent ${
+                  deckChamber === "turntable"
+                    ? "bg-accent text-cream shadow-xs"
+                    : "text-cream/80 hover:text-cream"
+                }`}
+                aria-pressed={deckChamber === "turntable"}
+              >
+                VINYL LP
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeckChamber("cassette")}
+                className={`rounded px-2.5 py-0.5 font-catalog text-[0.62rem] font-bold transition-colors focus-visible:outline-accent ${
+                  deckChamber === "cassette"
+                    ? "bg-accent text-cream shadow-xs"
+                    : "text-cream/80 hover:text-cream"
+                }`}
+                aria-pressed={deckChamber === "cassette"}
+              >
+                CASSETTE
+              </button>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-1.5 font-catalog text-[0.6rem] tracking-wider text-accent-light">
+              <span className="size-1.5 rounded-full bg-accent" />
+              <span>DIRECT DRIVE MOTOR</span>
+            </div>
           </div>
         </div>
 
         {/* 3-Column Responsive Grid */}
         <div className="grid gap-4 lg:grid-cols-[minmax(14rem,0.85fr)_minmax(0,1.2fr)_minmax(15rem,0.95fr)] lg:gap-6 lg:items-start">
-          {/* Column 1: Cassette Well Chamber + VU Meter */}
+          {/* Column 1: Turntable / Cassette Well Chamber + VU Meter */}
           <div className="flex flex-col gap-3">
-            <CassetteWellArtwork track={currentTrack} isPlaying={isPlaying} />
+            {deckChamber === "turntable" ? (
+              <TurntableWellArtwork track={currentTrack} isPlaying={isPlaying} />
+            ) : (
+              <CassetteWellArtwork track={currentTrack} isPlaying={isPlaying} />
+            )}
             <AnalogVUMeter isPlaying={isPlaying} />
           </div>
 
@@ -328,7 +463,7 @@ export function MusicPlayer() {
             <div>
               {/* Status Header */}
               <div
-                className="mb-2 flex items-center gap-1.5 font-catalog text-[0.68rem] tracking-[0.1em] text-cream/75"
+                className="mb-2 flex items-center gap-1.5 font-catalog text-[0.68rem] tracking-[0.1em] text-cream"
                 role="status"
                 aria-live="polite"
               >
@@ -348,7 +483,7 @@ export function MusicPlayer() {
               <h3 className="mt-1 font-display text-2xl leading-tight sm:text-3xl text-cream">
                 {currentTrack.title}
               </h3>
-              <p className="mt-0.5 text-xs text-cream/70 font-medium">
+              <p className="mt-0.5 text-xs text-cream/90 font-medium">
                 {currentTrack.artist}
               </p>
 
@@ -389,7 +524,7 @@ export function MusicPlayer() {
                 }
                 className="w-full"
               />
-              <div className="mt-0.5 flex justify-between font-catalog text-[0.62rem] tracking-[0.08em] text-cream/55">
+              <div className="mt-0.5 flex justify-between font-catalog text-[0.62rem] tracking-[0.08em] text-cream/85">
                 <span>{canSeek ? formatTime(currentTime) : "--:--"}</span>
                 <span>{canSeek ? formatTime(duration) : "TIME UNAVAILABLE"}</span>
               </div>
@@ -440,6 +575,15 @@ export function MusicPlayer() {
                 >
                   <Repeat2 aria-hidden="true" size={16} />
                 </TactileDeckButton>
+
+                <TactileDeckButton
+                  label={isCrackleOn ? "Disable vinyl crackle" : "Enable vinyl crackle"}
+                  sublabel="CRACKLE"
+                  active={isCrackleOn}
+                  onClick={toggleCrackle}
+                >
+                  <span className="font-catalog text-[0.62rem] font-bold">FX</span>
+                </TactileDeckButton>
               </div>
 
               {/* Knurled Volume Control */}
@@ -447,7 +591,7 @@ export function MusicPlayer() {
                 <div className="flex items-center justify-between text-cream/70">
                   <div className="flex items-center gap-1">
                     <Volume2 aria-hidden="true" size={14} />
-                    <span className="font-catalog text-[0.55rem] font-bold text-cream/60">
+                    <span className="font-catalog text-[0.55rem] font-bold text-cream/80">
                       OUTPUT
                     </span>
                   </div>
@@ -484,7 +628,7 @@ export function MusicPlayer() {
                   TRACKLIST
                 </span>
               </div>
-              <span className="font-catalog text-[0.6rem] text-cream/55">
+              <span className="font-catalog text-[0.6rem] text-cream/85">
                 {tracks.length} ENTRIES
               </span>
             </div>
@@ -494,18 +638,18 @@ export function MusicPlayer() {
                 const isCurrent = track.id === currentTrack.id;
                 const content = (
                   <>
-                    <span className="w-5 shrink-0 font-catalog text-xs font-bold text-cream/40">
+                    <span className="w-5 shrink-0 font-catalog text-xs font-bold text-cream/85">
                       {(index + 1).toString().padStart(2, "0")}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block font-display text-base leading-tight text-cream">
                         {track.title}
                       </span>
-                      <span className="block text-[0.7rem] text-cream/60 font-medium">
+                      <span className="block text-[0.7rem] text-cream/90 font-medium">
                         {track.artist}
                       </span>
                     </span>
-                    <span className="rounded border border-cream/20 bg-charcoal/60 px-1.5 py-0.5 font-catalog text-[0.55rem] tracking-wider text-cream/50">
+                    <span className="rounded border border-cream/20 bg-charcoal/60 px-1.5 py-0.5 font-catalog text-[0.55rem] tracking-wider text-cream/85">
                       {track.src ? "READY" : "AUDIO UNAVAILABLE"}
                     </span>
                   </>
