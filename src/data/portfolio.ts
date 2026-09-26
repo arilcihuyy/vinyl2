@@ -46,6 +46,7 @@ export const profile = {
 };
 
 export const navigation = [
+  { label: "Home", href: "#top" },
   { label: "About", href: "#about" },
   { label: "Music", href: "#music" },
   { label: "Interests", href: "#interests" },
@@ -82,42 +83,42 @@ export const interests: Interest[] = [
   {
     id: "programming",
     label: "Programming",
-    objectName: "Modular patch-bay keyboard",
+    objectName: "Vintage Synthesizer MK-1",
     description:
       "I enjoy programming because it lets me turn ideas into something real and interactive.",
   },
   {
     id: "ai",
     label: "AI",
-    objectName: "Signal-processing mixer",
+    objectName: "Analog 4-Track Mixing Console",
     description:
-      "I’m fascinated by AI and want to understand how intelligent systems work and how to build useful AI-powered tools.",
+      "I'm fascinated by AI and want to understand how intelligent systems work and how to build useful AI-powered tools.",
   },
   {
     id: "web3",
     label: "Web3",
-    objectName: "Interlocked chain links",
+    objectName: "Open Reel-to-Reel Tape Deck",
     description:
-      "I’m interested in blockchain technology, decentralized applications, and experimenting with new ideas in the Web3 ecosystem.",
+      "I'm interested in blockchain technology, decentralized applications, and experimenting with new ideas in the Web3 ecosystem.",
   },
   {
     id: "gaming",
     label: "Gaming",
-    objectName: "Game cartridge",
+    objectName: "Personal Stereo Walkman TPS",
     description:
       "Gaming is one of my hobbies and also inspires my interest in graphics, technology, and interactive experiences.",
   },
   {
     id: "technology",
     label: "Technology",
-    objectName: "Circuit board",
+    objectName: "Classic Dynamic Studio Mic",
     description:
       "I like exploring new hardware, software, operating systems, and emerging technologies.",
   },
   {
     id: "music",
     label: "Music",
-    objectName: "Speaker and record",
+    objectName: "Acoustic Studio Monitor",
     description:
       "Music is part of my everyday life and expresses a large part of my personality.",
   },

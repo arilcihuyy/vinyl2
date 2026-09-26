@@ -42,7 +42,29 @@ test("portfolio content and controls work without overflow", async ({ page }, te
   await expect(tracklist.getByText("Weird Fishes/Arpeggi", { exact: true })).toBeVisible();
   await expect(page.getByLabel("Mini music player")).toHaveCount(0);
 
-  await page.locator("#interests").scrollIntoViewIfNeeded();
+  const navigateTo = async (tabName: string, hash: string) => {
+    const desktopLink = page
+      .locator("nav[aria-label='Primary navigation']")
+      .getByRole("link", { name: new RegExp(tabName) });
+    if (await desktopLink.isVisible()) {
+      await desktopLink.click();
+    } else {
+      const menuBtn = page.getByRole("button", { name: /navigation menu/ });
+      if (await menuBtn.isVisible()) {
+        await menuBtn.click();
+        await page
+          .locator("#mobile-navigation")
+          .getByRole("link", { name: new RegExp(tabName) })
+          .click();
+      } else {
+        await page.evaluate((h) => {
+          window.location.hash = h;
+        }, hash);
+      }
+    }
+  };
+
+  await navigateTo("Interests", "#interests");
   for (const name of ["Programming", "AI", "Web3", "Gaming", "Technology", "Music"]) {
     const control = page
       .locator("#interests")
@@ -51,10 +73,11 @@ test("portfolio content and controls work without overflow", async ({ page }, te
     await expect(control).toHaveAttribute("aria-pressed", "true");
   }
 
-  await page.locator("#projects").scrollIntoViewIfNeeded();
+  await navigateTo("Projects", "#projects");
   await expect(page.getByRole("heading", { name: "No releases yet" })).toBeVisible();
   await expect(page.locator("#projects button")).toHaveCount(0);
 
+  await navigateTo("Contact", "#contact");
   const contact = page.locator("#contact");
   await expect(contact.getByRole("link", { name: /GitHub/ })).toHaveAttribute(
     "href",
@@ -67,6 +90,9 @@ test("portfolio content and controls work without overflow", async ({ page }, te
 
   await page.getByRole("link", { name: "Back to the top" }).click();
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5);
+
+  await navigateTo("Home", "#top");
+  await expect(page.getByRole("heading", { level: 1, name: "Aril" })).toBeVisible();
   expect(consoleErrors).toEqual([]);
 });
 
@@ -96,6 +122,12 @@ test("mobile navigation opens, closes, and navigates", async ({ page }, testInfo
   await menuButton.click();
   await page.getByRole("link", { name: /^Projects/ }).click();
   await expect(page).toHaveURL(/#projects$/);
+  await expect(page.getByRole("navigation", { name: "Mobile navigation" })).toHaveCount(0);
+
+  await menuButton.click();
+  await page.getByRole("link", { name: /^Home/ }).click();
+  await expect(page).toHaveURL(/#top$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Aril" })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Mobile navigation" })).toHaveCount(0);
 });
 

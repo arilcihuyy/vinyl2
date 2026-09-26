@@ -7,24 +7,26 @@ export function ProjectsSection() {
   return (
     <section
       id="projects"
-      className="paper-texture scroll-mt-18 bg-paper-deep px-5 py-20 text-ink sm:px-8 sm:py-24 lg:px-12 lg:py-30"
+      className="paper-texture flex h-full w-full flex-col items-center justify-center overflow-hidden bg-paper-deep px-4 py-4 text-ink sm:px-8 sm:py-6 lg:px-12"
     >
-      <div className="mx-auto max-w-[90rem]">
-        <Reveal className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(20rem,0.6fr)] lg:items-end">
-          <div>
-            <CatalogLabel index="04">Project releases</CatalogLabel>
-            <h2 className="mt-8 font-display text-5xl leading-none sm:text-6xl lg:text-7xl">
-              Work in progress.
-            </h2>
-          </div>
-          <p className="max-w-xl text-base leading-7 text-ink/65 lg:justify-self-end">
-            Real projects will appear as album covers, with details that open inside the page.
-          </p>
-        </Reveal>
+      <div className="w-full max-w-[90rem]">
+        <div className="rounded-xl border-2 border-ink/20 bg-paper/60 p-5 shadow-sm sm:p-7 lg:p-9">
+          <Reveal className="mb-6 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink/15 pb-3">
+            <div>
+              <CatalogLabel index="04">Project releases</CatalogLabel>
+              <h2 className="mt-1 font-display text-3xl leading-none sm:text-4xl lg:text-5xl">
+                Work in progress.
+              </h2>
+            </div>
+            <p className="max-w-md text-xs leading-5 text-ink/65 lg:text-right">
+              Real projects will appear as album covers, with details that open inside the page.
+            </p>
+          </Reveal>
 
-        <Reveal delay={0.08} className="mt-12 lg:mt-16">
-          <ProjectsGallery projects={projects} />
-        </Reveal>
+          <Reveal delay={0.06}>
+            <ProjectsGallery projects={projects} />
+          </Reveal>
+        </div>
       </div>
     </section>
   );
